@@ -36,9 +36,9 @@ public class Xingxing {
             String details = entity.getChargeDetails();
             String policyInfos = entity.getPolicyInfos();
             List<ChargeDetail> chargeDetails = JSON.parseArray(details, ChargeDetail.class);
-            List<policyInfo> policyInfos1 = JSON.parseArray(policyInfos, policyInfo.class);
-            if (policyInfos1!=null&&policyInfos1.size()>0){
-                policyInfos1 = policyInfos1.stream().sorted(Comparator.comparing(p -> p.getStartTime())).collect(Collectors.toList());
+            List<policyInfo> policyInfoList = JSON.parseArray(policyInfos, policyInfo.class);
+            if (policyInfoList!=null&&policyInfoList.size()>0){
+                policyInfoList = policyInfoList.stream().sorted(Comparator.comparing(p -> p.getStartTime())).collect(Collectors.toList());
             }
             if (chargeDetails!=null&&chargeDetails.size()>0){
                 for (ChargeDetail c:chargeDetails){
@@ -50,16 +50,15 @@ public class Xingxing {
                     Date startTimes = simpleDateFormat.parse(detailStartTime);
                     String format = simpleDateFormat2.format(startTimes);
                     int hour = Integer.parseInt(format);
-                    if (policyInfos1!=null&&policyInfos1.size()>0){
-                        for (int j =0;j<policyInfos1.size()-1;j++){
-                            policyInfo p = policyInfos1.get(j);
-                            policyInfo p1 = policyInfos1.get(j+1);
+                    if (policyInfoList!=null&&policyInfoList.size()>0){
+                        for (int j =0;j<policyInfoList.size()-1;j++){
+                            policyInfo p = policyInfoList.get(j);
+                            policyInfo p1 = policyInfoList.get(j+1);
                             String startTime = p.getStartTime().substring(0,2);
                             int start = Integer.parseInt(startTime);
                             String endTime = p1.getStartTime().substring(0,2);
                             int end = Integer.parseInt(endTime);
                             if (hour >= start && hour < end){
-
                                 if (elecPrice!=p.getElecPrice()||sevicePrice!=p.getServicePrice()){
                                     String err ="开始时间；"+detailStartTime+"：结算"+elecPrice+"+"+sevicePrice;
                                     String push = "推送："+p.getElecPrice()+"+"+p.getServicePrice();
@@ -69,11 +68,10 @@ public class Xingxing {
                                     if(pushPrice.compareTo(endPrice)>0){
                                         entity.setLovel("结算>推送：");
                                         errDatas.add(entity);
-                                    }else {
+                                    }/*else {
                                         entity.setLovel("结算<推送："+(pushPrice.subtract(endPrice)
                                                 .setScale(5, RoundingMode.HALF_UP)));
-                                    }
-
+                                    }*/
                                 }
                                 break;
                             }
